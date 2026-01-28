@@ -12,7 +12,7 @@ export default {
         'background-dark': '#1a1a1a',
       },
       fontFamily: {
-        display: ['Inter', 'sans-serif'],
+        display: ['Poppins', 'sans-serif'],
       },
       borderRadius: {
         DEFAULT: '0.5rem',
