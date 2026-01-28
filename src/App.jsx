@@ -4,27 +4,33 @@ import { db } from './lib/firebase'
 import UserDetailsForm from './components/UserDetailsForm'
 import logoImg from './assets/HelaGoLogo.png'
 import spinBtnImg from './assets/SpinButton.png'
-import capImg from './assets/Cap.png'
-import penImg from './assets/Pen.png'
-import tshirtImg from './assets/Tshirt.png'
+import bandanaImg from './assets/Bandana.png'
+import stickerImg from './assets/Sticker.png'
+import tshirt2Img from './assets/Tshirt2.png'
+import handbandImg from './assets/Handband.png'
+import hatImg from './assets/Hat.png'
+import tryAgainImg from './assets/TryAgain.png'
+import congratsGif from './assets/CongratsAnimation.gif'
 
-/** 3 gift types × 2 each = 6 segments. Dynamic: change GIFT_TYPES to alter items. */
-const GIFT_TYPES = [
-  { icon: capImg, alt: 'Cap' },
-  { icon: tshirtImg, alt: 'T-Shirt' },
-  { icon: penImg, alt: 'Pencil' },
+/** 6 wheel segments (indices 0–5). */
+const WHEEL_ITEMS = [
+  { icon: bandanaImg, alt: 'Bandana' },
+  { icon: stickerImg, alt: 'Sticker' },
+  { icon: tshirt2Img, alt: 'Tshirt' },
+  { icon: handbandImg, alt: 'Handband' },
+  { icon: hatImg, alt: 'Hat' },
+  { icon: tryAgainImg, alt: 'Try Again' },
 ]
-const WHEEL_ITEMS = [...GIFT_TYPES, ...GIFT_TYPES]
 
 /**
  * Segment center angles (deg) for icon-0..5. Pointer at bottom (180°).
- * Wheel base -30°. Transform: rotate(-30 + R). Segment at A ends up at A - 30 + R.
- * We want that = 180° → R ≡ 210 - A (mod 360). Rotation accumulates each spin;
- * offset must use current rotation % 360 so the target lands at the pointer every time.
+ * Wheel base -90° so index 2 (Tshirt, 90°) is at top, index 5 (Try Again, 270°) at bottom.
+ * Transform: rotate(-BASE_DEG + R). Segment at A ends up at A - BASE_DEG + R.
+ * We want that = 180° → R ≡ POINTER_DEG + BASE_DEG - A (mod 360).
  */
 const SEGMENT_ANGLES = [330, 30, 90, 150, 210, 270]
 const POINTER_DEG = 180
-const BASE_DEG = 30
+const BASE_DEG = 90
 const SPIN_DURATION_MIN_MS = 5000
 const SPIN_DURATION_MAX_MS = 10000
 const FULL_SPINS = 5
@@ -54,6 +60,11 @@ function App() {
     setRotation(0)
     setSpinError(null)
     setSaveFailed(false)
+  }, [])
+
+  const trySpinAgain = useCallback(() => {
+    setWinningItem(null)
+    setSpinError(null)
   }, [])
 
   useEffect(() => {
@@ -111,7 +122,7 @@ function App() {
     const wonItem = WHEEL_ITEMS[winnerIndex]
     setTimeout(async () => {
       setIsSpinning(false)
-      if (userDetails) {
+      if (userDetails && wonItem.alt !== 'Try Again') {
         try {
           await addDoc(collection(db, USERS_COLLECTION), {
             name: userDetails.name,
@@ -142,23 +153,118 @@ function App() {
     )
   }
 
-  return (
-    <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center justify-center font-display overflow-hidden select-none">
-      <div className="flex flex-col items-center w-full max-w-2xl px-4 py-8 space-y-8 md:space-y-12 h-screen justify-evenly">
-        {/* Header: Logo + Title */}
-        <div className="text-center z-10">
-          <div className="mb-4 flex justify-center">
+  const isTryAgain = winningItem?.alt === 'Try Again'
+
+  if (winningItem) {
+    return (
+      <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center font-display overflow-hidden select-none relative">
+        {/* Logo + title fixed at top */}
+        <header className="fixed top-0 left-0 right-0 z-10 flex flex-col items-center pt-6 pb-3 bg-background-light dark:bg-background-dark">
+          <div className="mb-6 flex justify-center">
             <img
-              alt="Helago Logo"
-              className="h-16 md:h-20 w-auto object-contain drop-shadow-md"
+              alt="HelaGo Logo"
+              className="h-14 md:h-20 w-auto object-contain drop-shadow-md"
               src={logoImg}
             />
           </div>
-          <h1 className="text-4xl md:text-6xl font-black italic text-white tracking-wide drop-shadow-lg uppercase">
+          <h1 className="title-shadow text-4xl md:text-6xl font-black italic text-white tracking-wide uppercase text-center">
             Spin The Wheel
           </h1>
-        </div>
+        </header>
 
+        {isTryAgain ? (
+          /* Sorry / Try Again screen */
+          <main className="flex-1 w-full flex flex-col items-center justify-center pt-44 md:pt-52 px-4">
+            <div className="max-w-md w-full text-center space-y-8">
+              <h2 className="title-shadow text-4xl md:text-5xl font-black text-white uppercase">
+                Sorry!
+              </h2>
+              <p className="text-xl md:text-2xl text-white/90 font-medium">
+                Better luck next time. Give it another spin!
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                <button
+                  type="button"
+                  onClick={trySpinAgain}
+                  className="px-8 py-4 bg-white text-primary font-bold rounded-xl text-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white transition"
+                >
+                  Spin again
+                </button>
+                <button
+                  type="button"
+                  onClick={goHome}
+                  className="px-8 py-4 bg-white/20 text-white font-bold rounded-xl text-lg border-2 border-white/50 hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition"
+                >
+                  Go home
+                </button>
+              </div>
+            </div>
+          </main>
+        ) : (
+          /* Congratulations / Winning item screen with GIF background */
+          <main className="flex-1 w-full flex flex-col items-center justify-center pt-44 md:pt-52 px-4 relative">
+            <div
+              className="absolute inset-0 z-0 bg-background-light dark:bg-background-dark"
+              aria-hidden="true"
+            />
+            <div
+              className="absolute left-1/2 top-1/2 z-[1] w-64 h-64 md:w-80 md:h-80 -translate-x-1/2 -translate-y-1/2 rounded-full overflow-hidden bg-background-light dark:bg-background-dark"
+              aria-hidden="true"
+            >
+              <img
+                src={congratsGif}
+                alt=""
+                className="w-full h-full object-contain pointer-events-none"
+                aria-hidden="true"
+              />
+            </div>
+            <div className="relative z-10 flex flex-col items-center text-center max-w-lg w-full space-y-6 md:space-y-8">
+              <h2 className="title-shadow text-3xl md:text-5xl text-white uppercase leading-tight">
+                <span className="font-black">Congratulation!</span>
+                <br />
+                <span className="font-normal">You have won</span>
+              </h2>
+              <img
+                src={winningItem.icon}
+                alt={winningItem.alt}
+                className="w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl [filter:brightness(0)_invert(1)]"
+              />
+              {saveFailed && (
+                <p className="text-red-200 text-sm font-medium" role="alert">
+                  Couldn&apos;t save your result. Please try again later.
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={goHome}
+                className="mt-4 px-10 py-4 bg-white text-primary font-bold rounded-xl text-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white transition"
+              >
+                Awesome!
+              </button>
+            </div>
+          </main>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center font-display overflow-hidden select-none relative">
+      {/* Logo + title fixed at top center (same as UserDetailsForm) */}
+      <header className="fixed top-0 left-0 right-0 z-10 flex flex-col items-center pt-6 pb-3 bg-background-light dark:bg-background-dark">
+        <div className="mb-6 flex justify-center">
+          <img
+            alt="HelaGo Logo"
+            className="h-14 md:h-20 w-auto object-contain drop-shadow-md"
+            src={logoImg}
+          />
+        </div>
+        <h1 className="title-shadow text-4xl md:text-6xl font-black italic text-white tracking-wide uppercase text-center">
+          Spin The Wheel
+        </h1>
+      </header>
+
+      <div className="flex-1 w-full flex flex-col items-center max-w-2xl px-4 pt-44 md:pt-52 pb-8 space-y-8 md:space-y-12 justify-evenly">
         {/* Wheel */}
         <div className="relative z-10 flex flex-col items-center">
           <div className="wheel-container bg-white dark:bg-gray-800">
@@ -166,7 +272,7 @@ function App() {
               className="wheel-bg relative"
               style={{
                 transition: `transform ${spinDurationMs / 1000}s cubic-bezier(0.2, 0.8, 0.2, 1)`,
-                transform: `rotate(${-30 + rotation}deg)`,
+                transform: `rotate(${-BASE_DEG + rotation}deg)`,
               }}
             >
               <div className="absolute inset-0 wheel-icons-layer">
@@ -217,7 +323,7 @@ function App() {
           </div>
 
           {/* Triangle pointer */}
-          <div className="relative flex justify-center filter drop-shadow-2xl">
+          <div className="relative flex justify-center filter drop-shadow-2xl mt-4">
             <svg
               className="drop-shadow-xl"
               fill="none"
@@ -261,44 +367,6 @@ function App() {
 
         <div className="h-8" />
       </div>
-
-      {/* Congratulations modal */}
-      {winningItem && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="congrats-title"
-          onClick={goHome}
-        >
-          <div
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-sm w-full p-6 md:p-8 text-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2
-              id="congrats-title"
-              className="text-2xl md:text-3xl font-black text-primary mb-2"
-            >
-              Congratulations!
-            </h2>
-            <p className={`text-lg md:text-xl text-gray-700 dark:text-gray-300 ${saveFailed ? 'mb-2' : 'mb-6'}`}>
-              You won the <span className="font-bold text-primary">{winningItem.alt}</span>!
-            </p>
-            {saveFailed && (
-              <p className="text-red-600 dark:text-red-400 text-sm mb-4" role="alert">
-                Couldn&apos;t save your result. Please try again later.
-              </p>
-            )}
-            <button
-              type="button"
-              onClick={goHome}
-              className="px-6 py-3 bg-primary text-white font-bold rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-            >
-              Awesome!
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
