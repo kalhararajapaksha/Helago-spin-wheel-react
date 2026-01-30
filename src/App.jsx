@@ -8,7 +8,7 @@ import spinBtnImg from './assets/SpinButton.png'
 import bandanaImg from './assets/Bandana.png'
 import stickerImg from './assets/Sticker.png'
 import tshirt2Img from './assets/Tshirt2.png'
-import handbandImg from './assets/Wristband.png'
+import wristbandImg from './assets/Wristband.png'
 import hatImg from './assets/Hat.png'
 import congratsGif from './assets/CongratsAnimation.gif'
 import arrowImg from './assets/Arrow.png'
@@ -18,7 +18,7 @@ const WHEEL_ITEMS = [
   { icon: bandanaImg, alt: 'Bandana' },
   { icon: stickerImg, alt: 'Sticker' },
   { icon: tshirt2Img, alt: 'Tshirt' },
-  { icon: handbandImg, alt: 'Handband' },
+  { icon: wristbandImg, alt: 'Wristband' },
   { icon: stickerImg, alt: 'Sticker' },
   { icon: hatImg, alt: 'Hat' },
 ]
