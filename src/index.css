@@ -2,6 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Vertical kiosk + touch: full height, safe area, touch-friendly */
+html, body, #root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Prevent double-tap zoom on kiosk */
+html {
+  touch-action: manipulation;
+}
+/* Safe area for notched / kiosk screens */
+@supports (padding: env(safe-area-inset-top)) {
+  .safe-area-inset {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+/* Minimum touch target for kiosk (44px) */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
 .title-shadow {
   text-shadow:
     0 1px 2px rgba(0, 0, 0, 0.8),
@@ -12,8 +49,8 @@
 
 .wheel-container {
   position: relative;
-  width: 80vw;
-  max-width: 600px;
+  width: 90vw;
+  max-width: 700px;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   border: 12px solid white;
@@ -67,20 +104,20 @@
 
 .wheel-icon {
   position: absolute;
-  width: 80px;
-  height: 80px;
+  width: 88px;
+  height: 88px;
   transform-origin: center center;
-  left: -40px;
-  top: -40px;
+  left: -44px;
+  top: -44px;
   display: block;
 }
 
 .wheel-icon-img {
   display: block;
-  width: 80px;
-  min-width: 80px;
-  height: 80px;
-  min-height: 80px;
+  width: 88px;
+  min-width: 88px;
+  height: 88px;
+  min-height: 88px;
   object-fit: contain;
   /* White icons on dark/green segments */
   filter: brightness(0) invert(1) drop-shadow(0 1px 3px rgba(0,0,0,0.35));
@@ -98,37 +135,37 @@
   pointer-events: none;
 }
 
-.pos-1 { transform: rotate(330deg) translate(0, -165px) rotate(-330deg); }
-.pos-2 { transform: rotate(30deg) translate(0, -165px) rotate(-30deg); }
-.pos-3 { transform: rotate(90deg) translate(0, -165px) rotate(-90deg); }
-.pos-4 { transform: rotate(150deg) translate(0, -165px) rotate(-150deg); }
-.pos-5 { transform: rotate(210deg) translate(0, -165px) rotate(-210deg); }
-.pos-6 { transform: rotate(270deg) translate(0, -165px) rotate(-270deg); }
+.pos-1 { transform: rotate(330deg) translate(0, -192px) rotate(-330deg); }
+.pos-2 { transform: rotate(30deg) translate(0, -192px) rotate(-30deg); }
+.pos-3 { transform: rotate(90deg) translate(0, -192px) rotate(-90deg); }
+.pos-4 { transform: rotate(150deg) translate(0, -192px) rotate(-150deg); }
+.pos-5 { transform: rotate(210deg) translate(0, -192px) rotate(-210deg); }
+.pos-6 { transform: rotate(270deg) translate(0, -192px) rotate(-270deg); }
 
 @media (min-width: 768px) {
-  .pos-1 { transform: rotate(330deg) translate(0, -198px) rotate(-330deg); }
-  .pos-2 { transform: rotate(30deg) translate(0, -198px) rotate(-30deg); }
-  .pos-3 { transform: rotate(90deg) translate(0, -198px) rotate(-90deg); }
-  .pos-4 { transform: rotate(150deg) translate(0, -198px) rotate(-150deg); }
-  .pos-5 { transform: rotate(210deg) translate(0, -198px) rotate(-210deg); }
-  .pos-6 { transform: rotate(270deg) translate(0, -198px) rotate(-270deg); }
-  .icon-1 { transform: rotate(330deg) translate(0, -198px) rotate(-330deg) rotate(90deg); }
-  .icon-2 { transform: rotate(30deg) translate(0, -198px) rotate(-30deg) rotate(90deg); }
-  .icon-3 { transform: rotate(90deg) translate(0, -198px) rotate(-90deg) rotate(90deg); }
-  .icon-4 { transform: rotate(150deg) translate(0, -198px) rotate(-150deg) rotate(90deg); }
-  .icon-5 { transform: rotate(210deg) translate(0, -198px) rotate(-210deg) rotate(90deg); }
-  .icon-6 { transform: rotate(270deg) translate(0, -198px) rotate(-270deg) rotate(90deg); }
+  .pos-1 { transform: rotate(330deg) translate(0, -231px) rotate(-330deg); }
+  .pos-2 { transform: rotate(30deg) translate(0, -231px) rotate(-30deg); }
+  .pos-3 { transform: rotate(90deg) translate(0, -231px) rotate(-90deg); }
+  .pos-4 { transform: rotate(150deg) translate(0, -231px) rotate(-150deg); }
+  .pos-5 { transform: rotate(210deg) translate(0, -231px) rotate(-210deg); }
+  .pos-6 { transform: rotate(270deg) translate(0, -231px) rotate(-270deg); }
+  .icon-1 { transform: rotate(330deg) translate(0, -231px) rotate(-330deg) rotate(90deg); }
+  .icon-2 { transform: rotate(30deg) translate(0, -231px) rotate(-30deg) rotate(90deg); }
+  .icon-3 { transform: rotate(90deg) translate(0, -231px) rotate(-90deg) rotate(90deg); }
+  .icon-4 { transform: rotate(150deg) translate(0, -231px) rotate(-150deg) rotate(90deg); }
+  .icon-5 { transform: rotate(210deg) translate(0, -231px) rotate(-210deg) rotate(90deg); }
+  .icon-6 { transform: rotate(270deg) translate(0, -231px) rotate(-270deg) rotate(90deg); }
   .wheel-icon {
-    width: 100px;
-    height: 100px;
-    left: -50px;
-    top: -50px;
+    width: 110px;
+    height: 110px;
+    left: -55px;
+    top: -55px;
   }
   .wheel-icon-img {
-    width: 100px;
-    min-width: 100px;
-    height: 100px;
-    min-height: 100px;
+    width: 110px;
+    min-width: 110px;
+    height: 110px;
+    min-height: 110px;
   }
   .wheel-icon-index {
     left: -50px !important;
@@ -144,12 +181,12 @@
   isolation: isolate;
 }
 
-.icon-1 { transform: rotate(330deg) translate(0, -175px) rotate(-330deg) rotate(90deg); }
-.icon-2 { transform: rotate(30deg) translate(0, -175px) rotate(-30deg) rotate(90deg); }
-.icon-3 { transform: rotate(90deg) translate(0, -175px) rotate(-90deg) rotate(90deg); }
-.icon-4 { transform: rotate(150deg) translate(0, -175px) rotate(-150deg) rotate(90deg); }
-.icon-5 { transform: rotate(210deg) translate(0, -175px) rotate(-210deg) rotate(90deg); }
-.icon-6 { transform: rotate(270deg) translate(0, -175px) rotate(-270deg) rotate(90deg); }
+.icon-1 { transform: rotate(330deg) translate(0, -192px) rotate(-330deg) rotate(90deg); }
+.icon-2 { transform: rotate(30deg) translate(0, -192px) rotate(-30deg) rotate(90deg); }
+.icon-3 { transform: rotate(90deg) translate(0, -192px) rotate(-90deg) rotate(90deg); }
+.icon-4 { transform: rotate(150deg) translate(0, -192px) rotate(-150deg) rotate(90deg); }
+.icon-5 { transform: rotate(210deg) translate(0, -192px) rotate(-210deg) rotate(90deg); }
+.icon-6 { transform: rotate(270deg) translate(0, -192px) rotate(-270deg) rotate(90deg); }
 
 .triangle-pointer {
   width: 0;

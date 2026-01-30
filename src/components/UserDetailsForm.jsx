@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
-import logoImg from '../assets/HelaGoLogo.png'
-import submitBtnImg from '../assets/SubmitButton.png'
+import AppHeader from './AppHeader'
+import ScreenWithBackground from './ScreenWithBackground'
 
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+// Standard QWERTY layout (user-friendly)
 const LETTER_ROWS = [
-  LETTERS.slice(0, 10),
-  LETTERS.slice(10, 19),
-  LETTERS.slice(19, 26),
+  ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+  ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+  ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
   [' ', '⌫'],
 ]
 const NUMBER_GRID = [
@@ -74,8 +75,15 @@ function UserDetailsForm({ onSuccess, isCheckingStock, stockError }) {
     onSuccess?.({ name: name.trim(), contact: contact.replace(/\D/g, '') })
   }
 
+  const handleClear = () => {
+    if (disabled) return
+    setName('')
+    setContact('')
+    setError('')
+  }
+
   return (
-    <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center font-display overflow-hidden select-none relative">
+    <ScreenWithBackground>
       <button
         type="button"
         onClick={toggleFullscreen}
@@ -93,57 +101,69 @@ function UserDetailsForm({ onSuccess, isCheckingStock, stockError }) {
         )}
       </button>
 
-      {/* Logo + title fixed at top center */}
-      <header className="fixed top-0 left-0 right-0 z-10 flex flex-col items-center pt-6 pb-3 bg-background-light dark:bg-background-dark">
-        <div className="mb-6 flex justify-center">
-          <img
-            alt="HelaGo Logo"
-            className="h-14 md:h-20 w-auto object-contain drop-shadow-md"
-            src={logoImg}
-          />
-        </div>
-        <h1 className="title-shadow text-4xl md:text-6xl font-black italic text-white tracking-wide uppercase text-center">
-          Spin The Wheel
-        </h1>
-      </header>
+      <AppHeader />
 
       {/* Main: fill remaining height, center form */}
-      <main className="flex-1 w-full flex flex-col items-center justify-center pt-44 md:pt-52 min-h-0 pb-8 px-4">
+      <main className="flex-1 w-full flex flex-col items-center justify-center pt-44 md:pt-52 min-h-0 pb-8 px-3 md:px-4">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-lg p-6 md:p-8 space-y-6"
+          className="w-full max-w-4xl p-4 md:p-6 space-y-6"
         >
-          <div>
-            <input
+          <div className="flex flex-col justify-between min-h-[220px] md:min-h-[260px]">
+          <div className="shrink-0">
+            <div
               id="user-name"
-              type="text"
-              value={name}
-              readOnly
-              placeholder="Your name"
+              role="textbox"
+              tabIndex={0}
               aria-label="Name"
-              autoComplete="off"
+              aria-readonly="true"
               onFocus={() => setActiveField('name')}
               onClick={() => setActiveField('name')}
-              className={`w-full px-5 py-4 text-lg md:text-xl rounded-xl border-2 bg-white text-center font-bold text-black uppercase placeholder-gray-400 placeholder:text-center placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-white/30 transition cursor-pointer ${
-                activeField === 'name' ? 'border-white ring-2 ring-white/50' : 'border-white/50'
+              onKeyDown={(e) => e.preventDefault()}
+              className={`w-full min-h-[5.5rem] md:min-h-[6rem] px-6 py-6 md:px-8 md:py-6 bg-[#f5ff00] font-bold text-black uppercase focus:outline-none focus:ring-2 focus:ring-white/50 transition cursor-pointer flex items-center justify-center ${
+                activeField === 'name' ? 'ring-2 ring-white/60' : ''
               } ${disabled ? 'opacity-60 pointer-events-none' : ''}`}
-            />
+            >
+              <div className="flex items-center justify-center gap-0.5">
+                <span className="text-5xl md:text-6xl lg:text-7xl tracking-wide text-center">
+                  {name || <span className="text-gray-500 normal-case">Your name</span>}
+                </span>
+                {activeField === 'name' && (
+                  <span
+                    className="inline-block w-0.5 h-12 md:h-14 lg:h-16 bg-black align-middle animate-blink shrink-0"
+                    aria-hidden="true"
+                  />
+                )}
+              </div>
+            </div>
           </div>
-          <div>
-            <input
+          <div className="shrink-0">
+            <div
               id="user-contact"
-              type="tel"
-              value={contact}
-              readOnly
-              placeholder="07XXXXXXXX"
+              role="textbox"
+              tabIndex={0}
               aria-label="Contact number (10 digits)"
-              autoComplete="off"
+              aria-readonly="true"
               onFocus={() => setActiveField('contact')}
               onClick={() => setActiveField('contact')}
-              className={`w-full px-5 py-4 text-lg md:text-xl rounded-xl border-2 bg-white text-center font-bold text-black uppercase placeholder-gray-400 placeholder:text-center placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-white/30 transition cursor-pointer ${
-                activeField === 'contact' ? 'border-white ring-2 ring-white/50' : 'border-white/50'
+              onKeyDown={(e) => e.preventDefault()}
+              className={`w-full min-h-[5.5rem] md:min-h-[6rem] px-6 py-6 md:px-8 md:py-6 bg-[#f5ff00] font-bold text-black uppercase focus:outline-none focus:ring-2 focus:ring-white/50 transition cursor-pointer flex items-center justify-center ${
+                activeField === 'contact' ? 'ring-2 ring-white/60' : ''
               } ${disabled ? 'opacity-60 pointer-events-none' : ''}`}
-            />
+            >
+              <div className="flex items-center justify-center gap-0.5">
+                <span className="text-5xl md:text-6xl lg:text-7xl tracking-wide text-center">
+                  {contact || <span className="text-gray-500 normal-case">07XXXXXXXX</span>}
+                </span>
+                {activeField === 'contact' && (
+                  <span
+                    className="inline-block w-0.5 h-12 md:h-14 lg:h-16 bg-black align-middle animate-blink shrink-0"
+                    aria-hidden="true"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
           </div>
           {(error || stockError) && (
             <p className="text-red-200 text-sm font-medium" role="alert">
@@ -152,7 +172,7 @@ function UserDetailsForm({ onSuccess, isCheckingStock, stockError }) {
           )}
 
           {/* Custom keyboard */}
-          <div className="mt-6 w-full">
+          <div className="mt-12 md:mt-14 w-full">
             <div className="rounded-2xl border-2 border-white/40 bg-white/5 px-4 py-4 md:px-5 md:py-5 max-w-xl mx-auto">
               {activeField === 'contact' ? (
                 <div className="flex flex-col gap-2 max-w-[240px] mx-auto">
@@ -168,7 +188,7 @@ function UserDetailsForm({ onSuccess, isCheckingStock, stockError }) {
                             onClick={() => handleKeyPress(k)}
                             disabled={disabled}
                             aria-label={k === '⌫' ? 'Backspace' : `Digit ${k}`}
-                            className="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-white/90 hover:bg-white border-2 border-white/50 text-black font-bold text-lg md:text-xl flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50 disabled:cursor-not-allowed transition active:scale-95"
+                            className="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-black text-[#f5ff00] hover:opacity-90 border-2 border-[#f5ff00]/40 font-bold text-lg md:text-xl flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#f5ff00]/50 disabled:opacity-50 disabled:cursor-not-allowed transition active:scale-95"
                           >
                             {k}
                           </button>
@@ -182,7 +202,7 @@ function UserDetailsForm({ onSuccess, isCheckingStock, stockError }) {
                   {LETTER_ROWS.map((row, ri) => (
                     <div
                       key={ri}
-                      className={`flex gap-1 justify-center ${ri === 3 ? 'gap-3' : ''}`}
+                      className={`flex gap-1 justify-center items-center ${ri === 3 ? 'gap-3' : ''}`}
                     >
                       {row.map((k) => (
                         <button
@@ -191,7 +211,7 @@ function UserDetailsForm({ onSuccess, isCheckingStock, stockError }) {
                           onClick={() => handleKeyPress(k)}
                           disabled={disabled}
                           aria-label={k === ' ' ? 'Space' : k === '⌫' ? 'Backspace' : `Letter ${k}`}
-                          className={`rounded-xl bg-white/90 hover:bg-white border-2 border-white/50 text-black font-bold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50 disabled:cursor-not-allowed transition active:scale-95 ${
+                          className={`rounded-xl bg-black text-[#f5ff00] hover:opacity-90 border-2 border-[#f5ff00]/40 font-bold flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#f5ff00]/50 disabled:opacity-50 disabled:cursor-not-allowed transition active:scale-95 ${
                             k === ' '
                               ? 'min-w-[80px] md:min-w-[120px] h-12 md:h-14 px-4 text-base'
                               : k === '⌫'
@@ -202,6 +222,17 @@ function UserDetailsForm({ onSuccess, isCheckingStock, stockError }) {
                           {k === ' ' ? 'Space' : k}
                         </button>
                       ))}
+                      {ri === 3 && (
+                        <button
+                          type="button"
+                          onClick={() => setActiveField('contact')}
+                          disabled={disabled}
+                          aria-label="Done – move to phone number"
+                          className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-black text-[#f5ff00] hover:opacity-90 border-2 border-[#f5ff00]/40 font-bold text-sm md:text-base flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-[#f5ff00]/50 disabled:opacity-50 disabled:cursor-not-allowed transition active:scale-95 shrink-0"
+                        >
+                          Done
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -209,21 +240,28 @@ function UserDetailsForm({ onSuccess, isCheckingStock, stockError }) {
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={disabled}
-            aria-label={isCheckingStock ? 'Checking availability…' : 'Submit'}
-            className="mt-8 w-full max-w-[220px] mx-auto block focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-70 disabled:cursor-not-allowed transition opacity-100 hover:opacity-90"
-          >
-            <img
-              src={submitBtnImg}
-              alt="Submit"
-              className="w-full h-auto object-contain pointer-events-none"
-            />
-          </button>
+          <div className="mt-10 md:mt-12 flex flex-wrap gap-4 justify-center items-center">
+            <button
+              type="button"
+              onClick={handleClear}
+              disabled={disabled}
+              aria-label="Clear form"
+              className="px-6 py-4 bg-white/20 hover:bg-white/30 text-white font-bold text-xl md:text-2xl rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-70 disabled:cursor-not-allowed transition"
+            >
+              Clear
+            </button>
+            <button
+              type="submit"
+              disabled={disabled}
+              aria-label={isCheckingStock ? 'Checking availability…' : 'Submit'}
+              className="px-6 py-4 bg-black text-[#f5ff00] font-bold text-2xl md:text-3xl rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent disabled:opacity-70 disabled:cursor-not-allowed transition opacity-100 hover:opacity-90"
+            >
+              SUBMIT
+            </button>
+          </div>
         </form>
       </main>
-    </div>
+    </ScreenWithBackground>
   )
 }
 
