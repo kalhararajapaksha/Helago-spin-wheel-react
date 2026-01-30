@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
-import { getDoc, doc, collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { getDoc, doc, collection, addDoc, serverTimestamp, query, where, getDocs, limit } from 'firebase/firestore'
 import { db } from './lib/firebase'
 import UserDetailsForm from './components/UserDetailsForm'
 import AppHeader from './components/AppHeader'
@@ -73,6 +73,23 @@ function App() {
     let cancelled = false
     const run = async () => {
       try {
+        // Phone number is primary key: reject if already used
+        const contactNorm = (userDetails.contact || '').replace(/\D/g, '')
+        if (contactNorm) {
+          const q = query(
+            collection(db, USERS_COLLECTION),
+            where('contact', '==', contactNorm),
+            limit(1)
+          )
+          const existing = await getDocs(q)
+          if (cancelled) return
+          if (!existing.empty) {
+            setStockError('This phone number has already been used.')
+            setStockChecking(false)
+            return
+          }
+        }
+
         const snap = await getDoc(doc(db, GIFT_ITEMS_DOC.collection, GIFT_ITEMS_DOC.id))
         if (cancelled) return
         const items = snap.exists() ? snap.data().items : null
@@ -125,9 +142,10 @@ function App() {
       setIsSpinning(false)
       if (userDetails && wonItem.alt !== 'Try Again') {
         try {
+          const contactNorm = (userDetails.contact || '').replace(/\D/g, '')
           await addDoc(collection(db, USERS_COLLECTION), {
             name: userDetails.name,
-            contact: userDetails.contact,
+            contact: contactNorm,
             wonGift: wonItem.alt,
             createdAt: serverTimestamp(),
           })
